@@ -2,9 +2,42 @@ const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost:5432/sequelize_practice', { logging: false });
 
 const User = db.define('user', {
-// YOUR CODE HERE...
+    first : Sequelize.STRING,
+    last : Sequelize.STRING,
+    age : {
+      type : Sequelize.INTEGER,
+      validate : {
+          min: 18
+      }
+    },
+    email : {
+        type : Sequelize.STRING,
+        allowNull : false
+    },
+    bio : Sequelize.TEXT,
+
 }, {
-// ...AND HERE
+    getterMethods : {
+        fullName () {
+            return this.first + ' ' + this.last;
+        }
+    }
 });
+
+User.prototype.haveBirthday = function () {
+    // return User.update({
+    //    age : Number(this.age) + 1 
+    // }, {
+    //     where : {
+    //         id : this.id
+    //     }
+    // }).then((updatedUser) => {
+    //     console.log(updatedUser);
+    // })
+    this.age = Number(this.age) + 1;
+    return this.save().then((updatedUser) => {
+        return updatedUser;
+    })
+}
 
 module.exports = User;
